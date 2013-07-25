@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="http://d3js.org/d3.v2.js?2.9.1"></script>
+<style>
+
+.link {
+  fill: none;
+  //stroke: lightgreen;
+  stroke-width: 1.5px;
+}
+
+.node circle {
+  fill: steelblue;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+</style>
+<body>
+<script>
+
+var links = [
+  {source: "w2-stlite-012.eng.vmware.com", target: "vmhba0", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba1", type: "UNKNOWN" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UP" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba0", type: "UNKNOWN" },
+{source: "vmhba36", target: "iqn.1992-08.com.netapp:sn.151730883", type: "UP" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba36", type: "UP" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "UNKNOWN" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "NOT_REPORTED" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba2", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba33", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba1", type: "UNKNOWN" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "UP" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UP" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba35", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba3", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba33", type: "UNKNOWN" },
+{source: "datastore1 (2)", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "datastore1 (2)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "iqn.1992-08.com.netapp:sn.151730883", type: "UP" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba37", type: "UP" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "test-del-me", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba37", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba36", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba35", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "build-toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba1", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba0", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "FAS3140-200G-3", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba33", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba38", type: "UP" },
+{source: "w2-stlite-014.eng.vmware.com", target: "datastore1", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba2", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "pdpesx", type: "NOT_REPORTED" },
+{source: "cluster", target: "w2-stlite-014.eng.vmware.com", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "build-toolchain", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba36", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba35", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba1", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "test-del-me", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba33", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba0", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "datastore1 (1)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba3", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-2-w2k3-32-lsi-p", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "build-toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba2", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-w2k3-32-lsi-np3", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba36", type: "UP" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-3", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-w2k3-32-lsi-np2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-rhel5-64-vmwpv-p2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-w2k3-32-lsi-np1", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "vmhba35", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-rhel5-64-vmwpv-p1", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "cluster", target: "w2-stlite-013.eng.vmware.com", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "NOT_REPORTED" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "test-del-me", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "build-toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "build-toolchain", type: "NOT_REPORTED" },
+{source: "build-toolchain", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "build-toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "datastore1", type: "NOT_REPORTED" },
+{source: "datastore1", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "datastore1 (1)", type: "NOT_REPORTED" },
+{source: "datastore1 (1)", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "pdpesx", type: "NOT_REPORTED" },
+{source: "pdpesx", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "pdpesx", type: "NOT_REPORTED" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UP" },
+{source: "datastore1", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "NOT_REPORTED" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "pdpesx", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "FAS3140-200G-3", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba2", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-w2k3-32-lsi-np1", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-w2k3-32-lsi-np1", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-w2k3-32-lsi-np2", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-w2k3-32-lsi-np2", type: "NOT_REPORTED" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "FAS3140-200G-1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "012-FAS3140-200G-1-w2k3-32-lsi-np3", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-w2k3-32-lsi-np3", type: "NOT_REPORTED" },
+{source: "setup1", target: "cluster", type: "NOT_REPORTED" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "UNKNOWN" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UNKNOWN" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "UNKNOWN" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UNKNOWN" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "UNKNOWN" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba1", type: "UNKNOWN" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "UP" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UP" },
+{source: "test-del-me", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba0", type: "UNKNOWN" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UP" },
+{source: "datastore1 (1)", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "NOT_REPORTED" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba33", type: "UNKNOWN" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "UP" },
+{source: "w2-stlite-014.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "NOT_REPORTED" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba36", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba35", type: "UNKNOWN" },
+{source: "vmhba38", target: "iqn.1992-08.com.netapp:sn.151730883", type: "UP" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba38", type: "UP" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "vmhba37", type: "UNKNOWN" },
+{source: "012-FAS3140-200G-1-rhel5-64-vmwpv-p1", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-rhel5-64-vmwpv-p1", type: "NOT_REPORTED" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "FAS3140-200G-2", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "vmhba36", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "vmhba38", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "vmhba37", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "setup1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-1-w2k3-32-lsi-p", type: "NOT_REPORTED" },
+{source: "FAS3140-200G-1-w2k3-32-lsi-p", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-rhel5-64-vmwpv-p2", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-rhel5-64-vmwpv-p2", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-3", type: "NOT_REPORTED" },
+{source: "FAS3140-200G-3", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-3", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "FAS3140-200G-3", type: "NOT_REPORTED" },
+{source: "FAS3140-200G-1", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "FAS3140-200G-1-w2k3-32-lsi-p", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-rhel5-64-vmwpv-p1", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-w2k3-32-lsi-np3", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-w2k3-32-lsi-np2", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-w2k3-32-lsi-np1", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "012-FAS3140-200G-1-rhel5-64-vmwpv-p2", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "test-del-me", type: "NOT_REPORTED" },
+{source: "test-del-me", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "w2-stlite-014.eng.vmware.com", target: "test-del-me", type: "NOT_REPORTED" },
+{source: "test-del-me", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "test-del-me", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-rhel5-64-vmwpv-p1", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "FAS3140-200G-2", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "013-FAS3140-200G-2-w2k3-32-lsi-np3", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-w2k3-32-lsi-np2", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-w2k3-32-lsi-np1", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "FAS3140-200G-2-w2k3-32-lsi-p", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-014.eng.vmware.com", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-rhel5-64-vmwpv-p2", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "vmhba36", target: "iqn.1992-08.com.netapp:sn.151730883", type: "UP" },
+{source: "vmhba38", target: "iqn.1992-08.com.netapp:sn.151730883", type: "UP" },
+{source: "vmhba37", target: "iqn.1992-08.com.netapp:sn.151730883", type: "UP" },
+{source: "iqn.1992-08.com.netapp:sn.151730883", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "UNKNOWN" },
+{source: "cluster", target: "w2-stlite-012.eng.vmware.com", type: "NOT_REPORTED" },
+{source: "cluster", target: "w2-stlite-013.eng.vmware.com", type: "NOT_REPORTED" },
+{source: "setup1", target: "cluster", type: "NOT_REPORTED" },
+{source: "cluster", target: "w2-stlite-014.eng.vmware.com", type: "NOT_REPORTED" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "UNKNOWN" },
+{source: "cluster", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c2001108e7d714276732)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c5001107ac3efc47648b)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c5001107ac63ce441da6)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UNKNOWN" },
+{source: "013-FAS3140-200G-2-w2k3-32-lsi-np1", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-w2k3-32-lsi-np1", type: "NOT_REPORTED" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "UP" },
+{source: "w2-stlite-013.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "NOT_REPORTED" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b868c2001108e82caa9ebc83)", type: "UNKNOWN" },
+{source: "w2-stlite-013.eng.vmware.com", target: "FAS3140-200G-2-w2k3-32-lsi-p", type: "NOT_REPORTED" },
+{source: "FAS3140-200G-2-w2k3-32-lsi-p", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-rhel5-64-vmwpv-p2", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-rhel5-64-vmwpv-p2", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-rhel5-64-vmwpv-p1", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-rhel5-64-vmwpv-p1", type: "NOT_REPORTED" },
+{source: "datastore1 (2)", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UNKNOWN" },
+{source: "vmhba1", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UP" },
+{source: "w2-stlite-012.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "NOT_REPORTED" },
+{source: "setup1", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UNKNOWN" },
+{source: "cluster", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-3", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-w2k3-32-lsi-np1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-1-w2k3-32-lsi-p", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba1", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba36", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba0", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba35", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "build-toolchain.eng.vmware.com::/toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-rhel5-64-vmwpv-p2", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "10.17.4.55::/pdpesx", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "test-del-me", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-rhel5-64-vmwpv-p1", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba33", type: "UNKNOWN" },
+{source: "w2-stlite-012.eng.vmware.com", target: "datastore1 (2)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "build-toolchain", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-w2k3-32-lsi-np3", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "012-FAS3140-200G-1-w2k3-32-lsi-np2", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "vmhba37", type: "UP" },
+{source: "w2-stlite-012.eng.vmware.com", target: "FAS3140-200G-1", type: "NOT_REPORTED" },
+{source: "cluster", target: "w2-stlite-012.eng.vmware.com", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a447a38)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f69466a44526a)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654524f71)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654516e36)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f667654504f64)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "NETAPP iSCSI Disk (naa.60a98000572d4e76676f725552315757)", type: "NOT_REPORTED" },
+{source: "w2-stlite-012.eng.vmware.com", target: "Local DELL Disk (naa.60019b90b86885000d7c131ff5fc378e)", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-w2k3-32-lsi-np3", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-w2k3-32-lsi-np3", type: "NOT_REPORTED" },
+{source: "013-FAS3140-200G-2-w2k3-32-lsi-np2", target: "FAS3140-200G-2", type: "NOT_REPORTED" },
+{source: "w2-stlite-013.eng.vmware.com", target: "013-FAS3140-200G-2-w2k3-32-lsi-np2", type: "NOT_REPORTED" }
+];
+
+var nodes = {};
+
+// Compute the distinct nodes from the links.
+links.forEach(function(link) {
+  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+});
+
+var width = 1060,
+    height = 700;
+
+var force = d3.layout.force()
+    .nodes(d3.values(nodes))
+    .links(links)
+    .size([width, height])
+    .linkDistance(160)
+    .charge(-800)
+    .on("tick", tick)
+    .start();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var link = svg.selectAll(".link")
+    .data(force.links())
+    .enter().append("line")
+    .attr("class", "link")
+    .style("stroke", function(d) {
+    		console.log(d.type);
+    
+    		if(d.type == "NOT_REPORTED"){
+    			console.log("returning red");
+    			return "red";
+    			}
+			if(d.type == "UP"){
+				console.log("returning yellow");
+    			return "red";
+			}				
+    		console.log("Returning steelblue");
+    		return "steelblue"
+    	});
+
+var node = svg.selectAll(".node")
+    .data(force.nodes())
+  .enter().append("g")
+    .attr("class", "node")
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout)
+    .call(force.drag);
+
+node.append("circle")
+    .attr("r", 8);
+
+node.append("text")
+    .attr("x", 12)
+    .attr("dy", ".35em")
+    .text(function(d) { return d.name; });
+
+function tick() {
+  link
+      .attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; })
+      .attr("stroke", function(d) {return "steelblue";});
+
+  node
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+}
+
+function mouseover() {
+  d3.select(this).select("circle").transition()
+      .duration(750)
+      .attr("r", 16)
+      .style("opacity", 0);
+}
+
+function mouseout() {
+  d3.select(this).select("circle").transition()
+      .duration(750)
+      .attr("r", 8)
+      .style("opacity", 1);
+}
+
+</script>
+February 14, 2013
