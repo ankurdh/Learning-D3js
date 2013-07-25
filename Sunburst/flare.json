@@ -1,0 +1,27 @@
+{
+ "name": "flare",
+ "children": [
+  {
+   "name": "Disk",
+   "children": [
+      {"name": "Reads", "size": 1983},
+      {"name": "Writes", "size": 2047}
+   ]
+  },
+{"name": "Network", "children":[{"name": "Reads", "size": 1983},
+      {"name": "Writes", "size": 2047}
+]},
+{"name": "Total", "children":[{"name": "NFS", "size": 1983},
+      {"name": "CIFS", "size": 9000},
+      {"name": "HTTP", "size": 2047}
+]},
+  {
+   "name": "Tape",
+   "children": [
+    {"name": "Reads", "size": 17010},
+    {"name": "Writes", "size": 5842},
+    {
+     "name": "interpolate", "size": 1232
+    }   ]
+  } ]
+}
